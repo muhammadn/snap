@@ -12,7 +12,8 @@ var db = require('./config/database');
 // controller
 var user = require('./app/controllers/users_controller');
 
+app.use(morgan('dev')); // for logging requests
+
 app.get('/api/users', user.getAllUsers);
 
-app.use(morgan('dev'));
 app.listen(port);
