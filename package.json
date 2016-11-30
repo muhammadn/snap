@@ -1,0 +1,24 @@
+{
+  "name": "snap",
+  "main": "server.js",
+  "description": "Backend Application for Video App",
+  "version": "0.0.1",
+  "author": "Taqi Systems",
+  "license": "UNLICENSED",
+  "repository": {
+     "type": "git+ssh",
+     "url": "git@gitlab.com:muhammadn/snap.git"
+  },
+  "contributors": [
+    {
+      "name": "Muhammad Nuzaihan Bin Kamal Luddin",
+      "email": "muhammad@taqisystems.com"
+    }
+  ],
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "jsonwebtoken": "^7.1.9",
+    "morgan": "^1.7.0"
+  }
+}
