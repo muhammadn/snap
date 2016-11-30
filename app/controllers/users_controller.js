@@ -23,7 +23,7 @@ function getSingleUser(req, res, next) {
         .json({
           status: 'success',
           data: data,
-          message: 'Retrieved ONE puppy'
+          message: 'Retrieved ONE user'
         });
     })
     .catch(function (err) {

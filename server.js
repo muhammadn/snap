@@ -15,5 +15,6 @@ var user = require('./app/controllers/users_controller');
 app.use(morgan('dev')); // for logging requests
 
 app.get('/api/users', user.getAllUsers);
+app.get('/api/users/:id', user.getSingleUser);
 
 app.listen(port);
