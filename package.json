@@ -6,8 +6,8 @@
   "author": "Taqi Systems",
   "license": "UNLICENSED",
   "repository": {
-     "type": "git+ssh",
-     "url": "git@gitlab.com:muhammadn/snap.git"
+    "type": "git+ssh",
+    "url": "git@gitlab.com:muhammadn/snap.git"
   },
   "contributors": [
     {
@@ -16,9 +16,17 @@
     }
   ],
   "dependencies": {
+    "bcrypt": "^0.8.7",
+    "bcryptjs": "^2.3.0",
     "body-parser": "^1.15.2",
+    "dotenv": "^2.0.0",
     "express": "^4.14.0",
     "jsonwebtoken": "^7.1.9",
-    "morgan": "^1.7.0"
+    "jwt-simple": "^0.5.1",
+    "knex": "^0.12.6",
+    "morgan": "^1.7.0",
+    "passport": "^0.3.2",
+    "passport-http-bearer": "^1.0.1",
+    "passport-local": "^1.0.0"
   }
 }

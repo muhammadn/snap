@@ -1,20 +1,84 @@
+require('dotenv').config()
 var express = require('express');
-var router = express.Router();
+var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var app = express();
+var jwt = require('jsonwebtoken');
+
+// db configuration
+var db = require('./config/database');
+const knex = require('./config/connection');
+
+// configuration
+var config = require('./config/application');
 
 // set the port
 var port = process.env.PORT || 8080; // used to create, sign, and verify tokens
 
-// db configuration
-var db = require('./config/database');
-
 // controller
 var user = require('./app/controllers/users_controller');
+var auth = require('./app/controllers/auth_controller');
+
+// initialize auth
+app.use(auth.initialize());
+
+// helper
+var authHelpers = require('./app/helpers/application_helper');
+
+// JSON Body parser
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.use(morgan('dev')); // for logging requests
 
 app.get('/api/users', user.getAllUsers);
 app.get('/api/users/:id', user.getSingleUser);
+
+app.post('/auth/login', authHelpers.loginRedirect, function(req, res, next) {
+  auth.authenticate('local', function(err, user, info) {
+    if (err) { handleResponse(res, 500, 'error'); }
+    if (!user) { handleResponse(res, 404, 'User not found or incorrect password'); }
+    // if (user) { handleResponse(res, 200, 'success'); }
+    if (user){
+      return res.json({ token: jwt.sign({id: user.id}, process.env.SECRET_KEY) }); 
+    }
+
+  })(req, res, next);
+});
+
+app.post('/auth/register', authHelpers.loginRedirect, (req, res, next)  => {
+  return authHelpers.createUser(req, res)
+  .then((response) => {
+    auth.authenticate('local', (err, user, info) => {
+      if (user) { handleResponse(res, 200, 'success'); }
+    })(req, res, next);
+  })
+  .catch(function(err){ handleResponse(res, 500, 'User exists'); });
+});
+
+// set all endpoint to use Authentication Bearer
+app.all('*', function(req, res, next) {
+  auth.authenticate('bearer', function(err, user, info) {
+    if (err) return next(err);
+    if (user) {
+      req.user = user;
+      return next();
+    } else {
+      return res.status(401).json({ status: 'error', code: 'unauthorized' });
+    }
+  })(req, res, next);
+});
+
+// endpoint to test the API, *with* Authentication
+app.get('/message', function(req, res) {
+  return res.json({
+    status: 'ok',
+    message: 'Congratulations ' + req.user.username + '. You have a token.'
+  });
+});
+
+function handleResponse(res, code, statusMsg) {
+  res.status(code).json({status: statusMsg});
+}
 
 app.listen(port);
