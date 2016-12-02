@@ -31,9 +31,6 @@ app.use(bodyParser.json());
 
 app.use(morgan('dev')); // for logging requests
 
-app.get('/api/users', user.getAllUsers);
-app.get('/api/users/:id', user.getSingleUser);
-
 app.post('/auth/login', authHelpers.loginRedirect, function(req, res, next) {
   auth.authenticate('local', function(err, user, info) {
     if (err) { handleResponse(res, 500, 'error'); }
@@ -76,12 +73,15 @@ app.all('*', function(req, res, next) {
 });
 
 // endpoint to test the API, *with* Authentication
-app.get('/message', function(req, res) {
+app.get('/hi', function(req, res) {
   return res.json({
     status: 'ok',
-    message: 'Congratulations ' + req.user.username + '. You have a token.'
+    message: 'Hi ' + req.user.username + '!. You have a token.'
   });
 });
+
+app.get('/api/users', user.getAllUsers);
+app.get('/api/users/:id', user.getSingleUser);
 
 function handleResponse(res, code, statusMsg) {
   res.status(code).json({status: statusMsg});
