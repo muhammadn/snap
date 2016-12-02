@@ -40,23 +40,29 @@ app.post('/auth/login', authHelpers.loginRedirect, function(req, res, next) {
     if (!user) { handleResponse(res, 404, 'User not found or incorrect password'); }
     // if (user) { handleResponse(res, 200, 'success'); }
     if (user){
-      return res.json({ token: jwt.sign({id: user.id}, process.env.SECRET_KEY) }); 
+      username = user.username;
+      knex('users').where({ username  }).first()
+      .then(function(user){
+        return res.json({"status": "success", "token": user.token });
+      });
+      //   return res.json({ token: jwt.sign({id: user.id}, secret) });
     }
 
   })(req, res, next);
 });
 
-app.post('/auth/register', authHelpers.loginRedirect, (req, res, next)  => {
+app.post('/auth/register', authHelpers.loginRedirect, function(req, res, next){
   return authHelpers.createUser(req, res)
-  .then((response) => {
-    auth.authenticate('local', (err, user, info) => {
+  .then(function(response){
+    auth.authenticate('local', function(err, user, info){
       if (user) { handleResponse(res, 200, 'success'); }
     })(req, res, next);
   })
   .catch(function(err){ handleResponse(res, 500, 'User exists'); });
 });
 
-// set all endpoint to use Authentication Bearer
+// All routes from this point on need to authenticate with bearer:
+// Authorization: Bearer <token here>
 app.all('*', function(req, res, next) {
   auth.authenticate('bearer', function(err, user, info) {
     if (err) return next(err);
