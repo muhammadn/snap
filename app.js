@@ -4,6 +4,7 @@ var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var app = express();
 var jwt = require('jsonwebtoken');
+var cors = require('cors');
 
 // db configuration
 var db = require('./config/database');
@@ -19,6 +20,9 @@ var port = process.env.PORT || 8080; // used to create, sign, and verify tokens
 var user = require('./app/controllers/users_controller');
 var auth = require('./app/controllers/auth_controller');
 
+// enable CORS
+app.use(cors());
+
 // initialize auth
 app.use(auth.initialize());
 
@@ -32,6 +36,15 @@ app.use(bodyParser.json());
 app.use(morgan('dev')); // for logging requests
 
 app.post('/auth/login', authHelpers.loginRedirect, function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
+  if (req.method == 'OPTIONS') {
+    res.status(200).end();
+  } else {
+    next();
+  }
+
   auth.authenticate('local', function(err, user, info) {
     if (err) { handleResponse(res, 500, 'error'); }
     if (!user) { handleResponse(res, 404, 'User not found or incorrect password'); }
@@ -49,6 +62,7 @@ app.post('/auth/login', authHelpers.loginRedirect, function(req, res, next) {
 });
 
 app.post('/auth/register', authHelpers.loginRedirect, function(req, res, next){
+
   return authHelpers.createUser(req, res)
   .then(function(response){
     auth.authenticate('local', function(err, user, info){
@@ -60,16 +74,7 @@ app.post('/auth/register', authHelpers.loginRedirect, function(req, res, next){
 
 // All routes from this point on need to authenticate with bearer:
 // Authorization: Bearer <token here>
-// res.header are for CORS (Cross-Origin Request)
 app.all('*', function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
-  if (req.method == 'OPTIONS') {
-    res.status(200).end();
-  } else {
-    next();
-  }
 
   auth.authenticate('bearer', function(err, user, info) {
     if (err) return next(err);
