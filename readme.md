@@ -1,5 +1,10 @@
 # Node JS App for Mobile API (OAuth Bearer Token)
 
+## Why?
+I was prototyping a video streaming backend but using just pure Express JS/Passport JS won't speed up my development time to prototype.
+
+So i decided to opensource this and who knows this might be something my future employers would want to see.
+
 ## Installation
 run `npm install` in your terminal/shell.
 
