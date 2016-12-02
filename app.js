@@ -60,7 +60,17 @@ app.post('/auth/register', authHelpers.loginRedirect, function(req, res, next){
 
 // All routes from this point on need to authenticate with bearer:
 // Authorization: Bearer <token here>
+// res.header are for CORS (Cross-Origin Request)
 app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-type,Accept,X-Access-Token,X-Key');
+  if (req.method == 'OPTIONS') {
+    res.status(200).end();
+  } else {
+    next();
+  }
+
   auth.authenticate('bearer', function(err, user, info) {
     if (err) return next(err);
     if (user) {
