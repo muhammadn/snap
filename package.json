@@ -4,7 +4,7 @@
   "description": "Backend Application for Video App",
   "version": "0.0.1",
   "author": "Taqi Systems",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "repository": {
     "type": "git+ssh",
     "url": "git@gitlab.com:muhammadn/snap.git"
