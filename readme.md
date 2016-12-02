@@ -10,3 +10,5 @@ NODE_ENV=development
 SECRET_KEY='yoursecretkey'
 ```
 you can generate your secret key using Ruby `rake` with `rake secret`
+
+For database, you will need PostgreSQL running on your local machine with user `devel` and password `password`.
